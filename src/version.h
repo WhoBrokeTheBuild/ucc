@@ -1,9 +1,15 @@
-#define UCC_VERSION "0.0.1"
-#define UCC_VERSION_STR \
-    "ucc version " UCC_VERSION
+#ifndef UCC_VERSION_H
+#define UCC_VERSION_H
 
-#define UCC_HELP_STR \
-    "Usage: ucc [OPTION]... FILE...\n" \
-    "Options:\n" \
-    "  --help                   Display this information\n" \
-    "  --version                Display compiler version information"
+#define UCC_VERSION_MAJOR 0
+#define UCC_VERSION_MINOR 0
+#define UCC_VERSION_PATCH 1
+#define UCC_VERSION_STR "0.0.1"
+
+void
+print_version()
+{
+    printf("ucc version %s\n", UCC_VERSION_STR);
+}
+
+#endif // UCC_VERSION_H

@@ -3,25 +3,36 @@
 #include <getopt.h>
 
 #include "version.h"
+#include "help.h"
+#include "config.h"
 #include "util.h"
 
-int main(int argc, char ** argv)
+#include "preprocessor.h"
+
+int
+main(int argc, char ** argv)
 {
-    char * out_file = NULL;
+    config_t conf;
+    init_config(&conf);
 
     static struct option long_opts[] =
     {
         {"version",     no_argument,        0, 0},
         {"help",        no_argument,        0, 0},
-        {0,             required_argument,  0, 'o'},
+        {0,             required_argument,  0, 'o'}, // Output
+        {0,             no_argument,        0, 'c'}, // Preprocess, Compile, & Assemble Only
+        {0,             no_argument,        0, 'E'}, // Preprocess Only
+        {0,             no_argument,        0, 'g'}, // Debug Symbols
+        {0,             no_argument,        0, 'S'}, // Preprocess & Compile Only
+        {0,             required_argument,  0, 'I'}, // Add Include Dir
         {0, 0, 0, 0}
     };
 
-    int optind = 0;
+    int opt_index = 0;
 
     for (;;)
     {
-        int opt = getopt_long(argc, argv, "o:", long_opts, &optind);
+        int opt = getopt_long(argc, argv, "o:", long_opts, &opt_index);
 
         if (opt == -1)
             break;
@@ -34,28 +45,67 @@ int main(int argc, char ** argv)
 
             if (strcmp(long_opts[optind].name, "version") == 0)
             {
-                puts(UCC_VERSION_STR);
+                print_version();
             }
             else if (strcmp(long_opts[optind].name, "help") == 0)
             {
-                puts(UCC_HELP_STR);
+                print_help();
             }
+            break;
+
+        case 'o':
+            conf.out_file = strdup(optarg);
+            break;
+
+        case 'c':
+            conf.preprocess = true;
+            conf.compile = true;
+            conf.assemble = true;
+            break;
+
+        case 'E':
+            conf.preprocess = true;
+            conf.compile = false;
+            conf.assemble = false;
+            break;
+
+        case 'g':
 
             break;
-        case 'o':
 
-            out_file = strdup(optarg);
-
+        case 'S':
+            conf.preprocess = true;
+            conf.compile = true;
+            conf.assemble = false;
             break;
         }
     }
 
-    if (out_file)
+    int num_in_files = argc - optind;
+
+    if (num_in_files <= 0)
     {
-        printf("Out File: %s\n", out_file);
+        fprintf(stderr, "No input files\n");
+        goto error;
     }
 
-    free(out_file);
+    conf.in_files = malloc((num_in_files + 1) * sizeof(char *));
+    for (int i = 0; i < num_in_files; ++i)
+    {
+        conf.in_files[i] = strdup(argv[optind + i]);
+    }
+    conf.in_files[num_in_files] = NULL;
 
+    if (conf.preprocess)
+    {
+        run_preprocessor(conf.in_files[0]);
+    }
+
+    free_config(&conf);
     return 0;
+
+error:
+
+    free_config(&conf);
+    return 1;
 }

@@ -4,17 +4,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-char * strdup(const char * str)
-{
-    if (str == NULL)
-        return NULL;
+#define SAFE_FREE(PTR) \
+    free(PTR); \
+    PTR = NULL
 
-    char * dup = malloc(strlen(str) + 1);
-    if (dup == NULL)
-        return NULL;
-
-    strcpy(dup, str);
-    return dup;
-}
+char * strdup(const char * str);
+char * strndup(const char * str, size_t n);
 
 #endif // UCC_UTIL_H

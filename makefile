@@ -1,4 +1,6 @@
-CFLAGS  += -Wall -Wpedantic -std=c11
+.PHONY: all clean
+
+CFLAGS  += -g -Wall -Wpedantic -std=c11
 LDFLAGS +=
 LDLIBS  +=
 
