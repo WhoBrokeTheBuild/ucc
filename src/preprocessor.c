@@ -28,19 +28,20 @@ run_preprocessor(const char * filename)
     }
 
     char * tmp = strdup(filename);
-    char * dir = dirname(tmp);
+    char * dir = strdup(dirname(tmp));
     free(tmp);
-    printf("Dir: %s\n", dir);
 
     int line_num = 0;
     char line[1024];
     while (fgets(line, sizeof(line), fp))
     {
         ++line_num;
-        char * lineptr = line;
-
         if (strlen(line) == 0)
             continue;
+
+        printf("%s", line);
+
+        char * lineptr = line;
 
         lineptr = skip_whitespace(lineptr);
         if (!lineptr)
@@ -87,8 +88,17 @@ run_preprocessor(const char * filename)
 
                 if (path)
                 {
-                    printf("Path %s\n", path);
+                    char * full_path = malloc(strlen(dir) + 1 + strlen(path) + 1);
+                    strcpy(full_path, dir);
+                    full_path[strlen(dir)] = '/';
+                    strcpy(full_path + strlen(dir) + 1, path);
+
+                    run_preprocessor(full_path);
+
+                    free(full_path);
                 }
+
+                free(path);
             }
         }
         else
