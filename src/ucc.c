@@ -7,8 +7,6 @@
 #include "config.h"
 #include "util.h"
 
-#include "preprocessor.h"
-
 int
 main(int argc, char ** argv)
 {
@@ -98,7 +96,6 @@ main(int argc, char ** argv)
 
     if (conf.preprocess)
     {
-        run_preprocessor(conf.in_files[0]);
     }
 
     free_config(&conf);

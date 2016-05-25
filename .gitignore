@@ -2,4 +2,7 @@
 obj/
 *.o
 *.d
+*.tab.*
+*.yy.c
+*.output
 ucc
